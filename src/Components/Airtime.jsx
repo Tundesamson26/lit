@@ -75,7 +75,7 @@ const Airtime = ({ open, handleClose }) => {
   function submit(e) {
     e.preventDefault();
     var formdata = new FormData();
-    formdata.append("apikey", "1a6cdb3400c83b8de18fce26bc5a52ae");
+    formdata.append("apikey", "");
     formdata.append("userid", "51915");
     formdata.append("network_id", net);
     formdata.append("amount", data.amount);
