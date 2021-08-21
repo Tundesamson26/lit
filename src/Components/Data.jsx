@@ -193,23 +193,30 @@ const Airtime = ({ open, handleClose }) => {
                 <Select value={net} displayEmpty onChange={
                   // updateSelectVal
                   (e)=>{
-                    const selectedPlans = e.target.value;
-                    setList(selectedPlans)
+                    const selectedPlan = e.target.value;
+                    axios.get("https://1app.online/api/getdataplans").then(({data}) => {
+                    const getNeededData = data[selectedPlan]
+                    console.log(data,selectedPlan,getNeededData)
+                    setList(getNeededData)
+
+                    }).catch(error => console.log(error))
+                  
                   }}>
                   <MenuItem value="" disabled>
                     Select Network
                   </MenuItem>
-                  <MenuItem value={2}>MTN</MenuItem>
-                  <MenuItem value={1}>Glo</MenuItem>
-                  <MenuItem value={3}>Airtel</MenuItem>
-                  <MenuItem value={4}>Etisalat</MenuItem>
+                  <MenuItem value={'MTN'}>MTN</MenuItem>
+                  <MenuItem value={'GLO'}>Glo</MenuItem>
+                  <MenuItem value={'AIRTEL'}>Airtel</MenuItem>
+                  <MenuItem value={'ETISALAT'}>Etisalat</MenuItem>
                 </Select><br /><br />
 
                 <Select
                   displayEmpty
                   // value={setList}
                 >
-                  {list.map((item) => (
+                  {
+                  list.map((item) => (
                     <MenuItem key={item.pld} value={item.pname}>
                       {item.pname}
                     </MenuItem>
