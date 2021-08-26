@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import Swal from 'sweetalert2'
 import Dialog from "@material-ui/core/Dialog";
 import { DialogTitle, DialogContent } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
@@ -45,9 +46,11 @@ const Airtime = ({ open, handleClose }) => {
     setNet(event.target.value);
   };
 
-  const publicKey = "pk_test_2699a515d800f6aba475d3ba3d0d4ce4055b8b4e";
+  const publicKey = "pk_live_0a9624fb703b23c81b064a185d761dc747894eeb";
+  // const secretKey ="sk_live_2643a1c19fd9e2b07c13f4a0398182280a2b6b23";
   const [amounti, setAmount] = useState(0); // amount = 1000 * 100;
   const [email, setEmail] = useState("");
+  const [dcode, setDcode] = useState("");
   //   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const amount = amounti * 100
@@ -59,10 +62,21 @@ const Airtime = ({ open, handleClose }) => {
       phone,
     },
     publicKey,
+    // secretKey,
     text: "Pay Now",
     onSuccess: () =>
-      alert("Thanks for doing business with us! Come back soon!!"),
-    onClose: () => alert("Wait! Don't leave :("),
+      Swal.fire(
+        'Thank You!',
+        'You just successfully perform a transaction',
+        'success'
+      ),
+    onClose: () => 
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Something went wrong!',
+        footer: '<a href="">Why do I have this issue?</a>'
+      }),
   };
   // React api
   const [data, setData] = useState({
@@ -74,11 +88,24 @@ const Airtime = ({ open, handleClose }) => {
 
   function submit(e) {
     e.preventDefault();
+    handleClose();
     var formdata = new FormData();
-    formdata.append("apikey", "1a6cdb3400c83b8de18fce26bc5a52ae");
-    formdata.append("userid", "51915");
-    formdata.append("network_id", net);
-    formdata.append("datacode", data.datacode);
+    var ntwk;
+    if (net == 'GLO') {
+      ntwk = 1;
+    } else if (net == 'MTN') {
+      ntwk = 2;
+    } else if (net == 'AIRTEL') {
+      ntwk = 3;
+    } else if (net == 'ETISALAT') {
+      ntwk = 4;
+    } else {
+      ntwk = '';
+    }
+    // formdata.append("apikey", "df024301c10d2028799d33aaaf4666b9");
+    formdata.append("userid", "71366");
+    formdata.append("network_id", ntwk);
+    formdata.append("datacode", dcode);
     formdata.append("phoneno", data.phoneno);
 
     var requestOptions = {
@@ -88,8 +115,10 @@ const Airtime = ({ open, handleClose }) => {
     };
 
     console.log(data.phoneno);
-    console.log(data.amount);
-    console.log(net);
+    console.log(amounti);
+    console.log(dcode);
+    console.log(email);
+    console.log(ntwk);
 
     fetch("https://1app.online/api/databundle", requestOptions)
       .then(response => response.text())
@@ -98,7 +127,6 @@ const Airtime = ({ open, handleClose }) => {
   }
 
   const [list, setList] = useState([]);
-  const [categoryName, setCategoryName] = useState("");
 
   useEffect(() => {
     axios.get("https://1app.online/api/getdataplans")
@@ -118,14 +146,6 @@ const Airtime = ({ open, handleClose }) => {
     newdata[e.target.name] = e.target.value;
     setData(newdata);
   }
-
-  function sayHello() {
-    // alert('Hello!');
-  }
-
-  // const handleChange = (event) => {
-  //   setCategoryName(event.target.value);
-  // };
 
   return (
     <Dialog
@@ -199,7 +219,6 @@ const Airtime = ({ open, handleClose }) => {
                       const getNeededData = data[selectedPlan]
                       console.log(data, selectedPlan, getNeededData)
                       setList(getNeededData)
-
                     }).catch(error => console.log(error))
 
                   }}>
@@ -221,6 +240,10 @@ const Airtime = ({ open, handleClose }) => {
                       let priceList = list.find((item) => item.pld === selected)
                       console.log(priceList)
                       let price = priceList.price;
+                      setAmount(price)
+                      let dcode = priceList.pld;
+                      setDcode(dcode)
+                      console.log(dcode)
                       console.log(price)
                     }
                   }
@@ -231,12 +254,15 @@ const Airtime = ({ open, handleClose }) => {
                         onchange={
                           (e) => {
                             const selected = e.target.value;
-                            // let priceList = list.find((item) => item.pld===selected)
+                            let priceList = list.find((item) => item.pld === selected)
+                            // let price = list.find((item) => item.price === setAmount)
+                            // console.log(price)
                             console.log(selected)
                           }
                         }
                         value={item.pld}>
-                        {item.pname}
+                        {item.pname} / &#8358;{item.price}
+
                       </MenuItem>
                     ))}
                 </Select>
