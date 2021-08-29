@@ -46,7 +46,32 @@ const Airtime = ({ open, handleClose }) => {
     setNet(event.target.value);
   };
 
-  const publicKey = "pk_live_0a9624fb703b23c81b064a185d761dc747894eeb";
+  const publicKey = "pk_test_2699a515d800f6aba475d3ba3d0d4ce4055b8b4e";
+
+  const loadData = (PAYLOAD) => {
+ 
+    var formdata = new FormData();
+        formdata.append("apikey", "df024301c10d2028799d33aaaf4666b9");
+        formdata.append("userid", "71366");
+        formdata.append("network_id", PAYLOAD.networkId);
+        formdata.append("datacode", PAYLOAD.dcode);
+        formdata.append("phoneno", '08062070963');
+    
+        var requestOptions = {
+          method: 'POST',
+          body: formdata,
+          redirect: 'follow'
+        };
+    
+
+    
+        fetch("https://1app.online/api/databundle", requestOptions)
+          .then(response => {
+            console.log(response)
+            alert('Data Subsription successful')
+          })
+          .catch(error => console.log('error', error));
+  }
   // const secretKey ="sk_live_2643a1c19fd9e2b07c13f4a0398182280a2b6b23";
   const [amounti, setAmount] = useState(0); // amount = 1000 * 100;
   const [email, setEmail] = useState("");
@@ -64,12 +89,9 @@ const Airtime = ({ open, handleClose }) => {
     publicKey,
     // secretKey,
     text: "Pay Now",
-    onSuccess: () =>
-      Swal.fire(
-        'Thank You!',
-        'You just successfully perform a transaction',
-        'success'
-      ),
+    onSuccess: () =>{
+      return loadData(JSON.parse(sessionStorage.getItem('pendingOrder')))
+    },
     onClose: () => 
       Swal.fire({
         icon: 'error',
@@ -86,47 +108,10 @@ const Airtime = ({ open, handleClose }) => {
     network_id: "",
   });
 
-  function submit(e) {
-    e.preventDefault();
-    handleClose();
-    var formdata = new FormData();
-    var ntwk;
-    if (net == 'GLO') {
-      ntwk = 1;
-    } else if (net == 'MTN') {
-      ntwk = 2;
-    } else if (net == 'AIRTEL') {
-      ntwk = 3;
-    } else if (net == 'ETISALAT') {
-      ntwk = 4;
-    } else {
-      ntwk = '';
-    }
-    // formdata.append("apikey", "df024301c10d2028799d33aaaf4666b9");
-    formdata.append("userid", "71366");
-    formdata.append("network_id", ntwk);
-    formdata.append("datacode", dcode);
-    formdata.append("phoneno", data.phoneno);
-
-    var requestOptions = {
-      method: 'POST',
-      body: formdata,
-      redirect: 'follow'
-    };
-
-    console.log(data.phoneno);
-    console.log(amounti);
-    console.log(dcode);
-    console.log(email);
-    console.log(ntwk);
-
-    fetch("https://1app.online/api/databundle", requestOptions)
-      .then(response => response.text())
-      .then(result => console.log(result))
-      .catch(error => console.log('error', error));
-  }
+ 
 
   const [list, setList] = useState([]);
+  const [pendingOrder, setPendingOrder] =useState({});
 
   useEffect(() => {
     axios.get("https://1app.online/api/getdataplans")
@@ -164,8 +149,11 @@ const Airtime = ({ open, handleClose }) => {
               Data Top-Up
             </Typography>
             <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleClose()
+            }}
               className={classes.form}
-              onSubmit={(e) => submit(e)}
               noValidate
             >
               <TextField
@@ -219,6 +207,17 @@ const Airtime = ({ open, handleClose }) => {
                       const getNeededData = data[selectedPlan]
                       console.log(data, selectedPlan, getNeededData)
                       setList(getNeededData)
+                      const networkId = {
+                        GLO : 1,
+                        MTN : 2,
+                        AIRTEL : 3,
+                        ETISALAT :4
+                  
+                      };
+                      const getNetworkId = {networkId : networkId[selectedPlan]}
+                      console.log('this is seleceted', getNetworkId)
+                      sessionStorage.setItem('pendingOrder',JSON.stringify(getNetworkId))
+                      
                     }).catch(error => console.log(error))
 
                   }}>
@@ -241,6 +240,12 @@ const Airtime = ({ open, handleClose }) => {
                       console.log(priceList)
                       let price = priceList.price;
                       setAmount(price)
+                      let getpendingOrder = sessionStorage.pendingOrder ?? false;
+                      if(!getpendingOrder) return alert('Select your Network')
+                    let  pendingOrder = JSON.parse(getpendingOrder)
+                      pendingOrder.dcode  = priceList.pld
+                      sessionStorage.setItem('pendingOrder',JSON.stringify(pendingOrder))
+
                       let dcode = priceList.pld;
                       setDcode(dcode)
                       console.log(dcode)
