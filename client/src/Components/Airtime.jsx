@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Dialog from "@material-ui/core/Dialog";
@@ -72,14 +73,18 @@ const Airtime = ({ open, handleClose }) => {
     network_id: "",
   });
 
-  function submit(e) {
-    e.preventDefault();
+  const loadAirtime = (PAYLOAD) => {
+
     var formdata = new FormData();
-    formdata.append("apikey", "");
-    formdata.append("userid", "51915");
-    formdata.append("network_id", net);
-    formdata.append("amount", data.amount);
-    formdata.append("phoneno", data.phoneno);
+    const phone = document.querySelector('#number').value;
+    const amount = document.querySelector('#number_amount').value
+    console.log(phone)
+    console.log(amount)
+    formdata.append("apikey", "929euehehe87udw9d792783197");
+    formdata.append("userid", "71366");
+    formdata.append("network_id", PAYLOAD.network_id);
+    formdata.append("amount", amount);
+    formdata.append("phoneno", phone);
 
     var requestOptions = {
       method: 'POST',
@@ -87,13 +92,14 @@ const Airtime = ({ open, handleClose }) => {
       redirect: 'follow'
     };
 
-      console.log(data.phoneno);
-      console.log(data.amount);
-      console.log(net);
+
 
     fetch("https://1app.online/api/airtime", requestOptions)
-      .then(response => response.text())
-      .then(result => console.log(result))
+      .then(response => {
+        console.log(response)
+        handleClose()
+        alert('Airtime Subsription successful')
+      })
       .catch(error => console.log('error', error));
   }
 
@@ -135,7 +141,9 @@ const Airtime = ({ open, handleClose }) => {
             </Typography>
             <form
               className={classes.form}
-              onSubmit={(e) => submit(e)}
+              onSubmit={(e) => {
+                e.preventDefault();
+              }}
               noValidate
             >
               <TextField
@@ -169,7 +177,7 @@ const Airtime = ({ open, handleClose }) => {
                 name="phoneno"
                 label="Phone Number"
                 type="number"
-                id="number"
+                id="number_amount"
                 autoComplete="number"
               />
               <TextField

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Swal from 'sweetalert2'
@@ -49,28 +50,32 @@ const Airtime = ({ open, handleClose }) => {
   const publicKey = "pk_test_2699a515d800f6aba475d3ba3d0d4ce4055b8b4e";
 
   const loadData = (PAYLOAD) => {
- 
+
     var formdata = new FormData();
-        formdata.append("apikey", "df024301c10d2028799d33aaaf4666b9");
-        formdata.append("userid", "71366");
-        formdata.append("network_id", PAYLOAD.networkId);
-        formdata.append("datacode", PAYLOAD.dcode);
-        formdata.append("phoneno", '08062070963');
-    
-        var requestOptions = {
-          method: 'POST',
-          body: formdata,
-          redirect: 'follow'
-        };
+    const phone = document.querySelector('#number').value;
+    console.log(phone)
+    formdata.append("apikey", "929euehehe87udw9d792783197");
+    formdata.append("userid", "71366");
+    formdata.append("network_id", PAYLOAD.networkId);
+    formdata.append("datacode", PAYLOAD.dcode);
+    formdata.append("phoneno", phone);
     
 
-    
-        fetch("https://1app.online/api/databundle", requestOptions)
-          .then(response => {
-            console.log(response)
-            alert('Data Subsription successful')
-          })
-          .catch(error => console.log('error', error));
+    var requestOptions = {
+      method: 'POST',
+      body: formdata,
+      redirect: 'follow'
+    };
+
+
+
+    fetch("https://1app.online/api/databundle", requestOptions)
+      .then(response => {
+        console.log(response)
+        handleClose()
+        alert('Data Subsription successful')
+      })
+      .catch(error => console.log('error', error));
   }
   // const secretKey ="sk_live_2643a1c19fd9e2b07c13f4a0398182280a2b6b23";
   const [amounti, setAmount] = useState(0); // amount = 1000 * 100;
@@ -89,10 +94,10 @@ const Airtime = ({ open, handleClose }) => {
     publicKey,
     // secretKey,
     text: "Pay Now",
-    onSuccess: () =>{
+    onSuccess: () => {
       return loadData(JSON.parse(sessionStorage.getItem('pendingOrder')))
     },
-    onClose: () => 
+    onClose: () =>
       Swal.fire({
         icon: 'error',
         title: 'Oops...',
@@ -108,10 +113,10 @@ const Airtime = ({ open, handleClose }) => {
     network_id: "",
   });
 
- 
+
 
   const [list, setList] = useState([]);
-  const [pendingOrder, setPendingOrder] =useState({});
+  const [pendingOrder, setPendingOrder] = useState({});
 
   useEffect(() => {
     axios.get("https://1app.online/api/getdataplans")
@@ -149,10 +154,9 @@ const Airtime = ({ open, handleClose }) => {
               Data Top-Up
             </Typography>
             <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleClose()
-            }}
+              onSubmit={(e) => {
+                e.preventDefault();
+              }}
               className={classes.form}
               noValidate
             >
@@ -208,16 +212,16 @@ const Airtime = ({ open, handleClose }) => {
                       console.log(data, selectedPlan, getNeededData)
                       setList(getNeededData)
                       const networkId = {
-                        GLO : 1,
-                        MTN : 2,
-                        AIRTEL : 3,
-                        ETISALAT :4
-                  
+                        GLO: 1,
+                        MTN: 2,
+                        AIRTEL: 3,
+                        ETISALAT: 4
+
                       };
-                      const getNetworkId = {networkId : networkId[selectedPlan]}
+                      const getNetworkId = { networkId: networkId[selectedPlan] }
                       console.log('this is seleceted', getNetworkId)
-                      sessionStorage.setItem('pendingOrder',JSON.stringify(getNetworkId))
-                      
+                      sessionStorage.setItem('pendingOrder', JSON.stringify(getNetworkId))
+
                     }).catch(error => console.log(error))
 
                   }}>
@@ -241,10 +245,10 @@ const Airtime = ({ open, handleClose }) => {
                       let price = priceList.price;
                       setAmount(price)
                       let getpendingOrder = sessionStorage.pendingOrder ?? false;
-                      if(!getpendingOrder) return alert('Select your Network')
-                    let  pendingOrder = JSON.parse(getpendingOrder)
-                      pendingOrder.dcode  = priceList.pld
-                      sessionStorage.setItem('pendingOrder',JSON.stringify(pendingOrder))
+                      if (!getpendingOrder) return alert('Select your Network')
+                      let pendingOrder = JSON.parse(getpendingOrder)
+                      pendingOrder.dcode = priceList.pld
+                      sessionStorage.setItem('pendingOrder', JSON.stringify(pendingOrder))
 
                       let dcode = priceList.pld;
                       setDcode(dcode)
