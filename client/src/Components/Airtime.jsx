@@ -17,6 +17,7 @@ import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import { PaystackButton } from "react-paystack";
+import SuccessPage from "./SuccessPage";
 
 const Airtime = ({ open, handleClose }) => {
   const useStyles = makeStyles((theme) => ({
@@ -97,8 +98,8 @@ const Airtime = ({ open, handleClose }) => {
     fetch("https://1app.online/api/airtime", requestOptions)
       .then(response => {
         console.log(response)
-        handleClose()
-        alert('Airtime Subsription successful')
+        handleClose();
+        <SuccessPage />
       })
       .catch(error => console.log('error', error));
   }
